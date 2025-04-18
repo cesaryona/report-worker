@@ -1,0 +1,27 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: report-worker
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/report_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+
+aws:
+  endpoint:
+    url: http://localhost:4566
+  region: us-east-1
+  credentials:
+    access-key: test
+    secret-key: test
+  queue:
+    report-request: report-request-queue
+  bucket: reports
