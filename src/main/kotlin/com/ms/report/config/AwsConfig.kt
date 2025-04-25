@@ -1,46 +1,48 @@
-package com.ms.report.api.config
+package com.ms.report.config
 
-import com.ms.report.api.config.properties.AwsProperties
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ms.report.config.properties.AwsProperties
+import com.report.utils.config.AwsClientFactory
+import com.report.utils.service.S3Service
+import com.report.utils.service.SqsService
+import com.report.utils.service.impl.S3ServiceImpl
+import com.report.utils.service.impl.SqsServiceImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
-import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.S3Configuration
 import software.amazon.awssdk.services.sqs.SqsClient
-import java.net.URI
 
 @Configuration
 class AwsConfig(private val properties: AwsProperties) {
 
-    private val credentialsProvider = StaticCredentialsProvider.create(
-        AwsBasicCredentials.create(properties.credentials.accessKey, properties.credentials.secretKey)
-    )
-
     @Bean
-    fun sqsClient(): SqsClient {
-        return SqsClient.builder()
-            .endpointOverride(getURI())
-            .credentialsProvider(credentialsProvider)
-            .region(Region.of(properties.region))
-            .build()
+    fun awsClientFactory(): AwsClientFactory {
+        return AwsClientFactory(
+            properties.credentials.accessKey,
+            properties.credentials.secretKey,
+            properties.region,
+            properties.endpoint.url
+        )
     }
 
     @Bean
-    fun s3Client(): S3Client {
-        return S3Client.builder()
-            .endpointOverride(getURI())
-            .credentialsProvider(credentialsProvider)
-            .region(Region.of(properties.region))
-            .serviceConfiguration(
-                S3Configuration.builder().pathStyleAccessEnabled(true).build()
-            )
-            .build()
+    fun sqsClient(factory: AwsClientFactory): SqsClient {
+        return factory.createSqsClient();
     }
 
-    private fun getURI(): URI {
-        return URI.create(properties.endpoint.url)
+    @Bean
+    fun sqsService(sqsClient: SqsClient, objectMapper: ObjectMapper): SqsService {
+        return SqsServiceImpl(objectMapper, sqsClient);
+    }
+
+    @Bean
+    fun s3Client(factory: AwsClientFactory): S3Client {
+        return factory.createS3Client();
+    }
+
+    @Bean
+    fun s3Service(s3Client: S3Client): S3Service {
+        return S3ServiceImpl(s3Client)
     }
 
 }

@@ -1,4 +1,4 @@
-package com.ms.report.api.config.properties
+package com.ms.report.config.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
@@ -15,5 +15,5 @@ data class AwsProperties(
 
     data class Endpoint(var url: String = "")
     data class Credentials(var accessKey: String = "", var secretKey: String = "")
-    data class Queue(var reportRequest: String = "")
+    data class Queue(var reportRequest: String = "", var reportStatus: String = "")
 }

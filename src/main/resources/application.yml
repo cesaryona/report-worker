@@ -11,7 +11,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate.format_sql: true
 
@@ -24,4 +24,5 @@ aws:
     secret-key: test
   queue:
     report-request: report-request-queue
+    report-status: report-status-queue
   bucket: reports

@@ -1,8 +1,7 @@
 package com.ms.report.service.report
 
 import com.ms.report.api.repository.entity.enums.ReportCategory
-import com.ms.report.repository.enums.ReportType
-import java.util.*
+import com.ms.report.api.repository.entity.enums.ReportType
 
 interface ReportGenerator {
 
